@@ -50,7 +50,7 @@ GET /test-db
 ```json
 {
   "result": {
-		"?column?": 1
+    "?column?": 1
   }
 }
 ```
