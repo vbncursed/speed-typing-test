@@ -1,5 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.responses import FileResponse
+from .auth import get_current_user
+from sqlalchemy import select
+from models import results
+from db import database
 import random
 
 router = APIRouter()
@@ -33,9 +37,25 @@ async def start_test(language: str):
 
 
 @router.get("/results")
-async def get_test_results():
-    # Логика получения результатов тестов
-    file_path = "path_to_results_file.txt"
-    return FileResponse(
-        file_path, media_type="application/octet-stream", filename="results.txt"
-    )
+async def get_test_results(
+    request: Request, current_user: dict = Depends(get_current_user)
+):
+    try:
+        token = request.headers.get("Authorization")
+        print(f"Полученный токен: {token}")  # Отладочное сообщение
+
+        query = select([results.c.result_data]).where(
+            results.c.user_id == current_user["id"]
+        )
+        result = await database.fetch_one(query)
+        print(f"Результат запроса: {result}")  # Отладочное сообщение
+
+        if not result:
+            raise HTTPException(status_code=404, detail="Results not found")
+
+        file_path = f"results_{current_user['id']}.txt"
+        print(f"Путь к файлу: {file_path}")  # Отладочное сообщение
+        return FileResponse(file_path)
+    except Exception as e:
+        print(f"Ошибка: {e}")  # Отладочное сообщение
+        raise HTTPException(status_code=500, detail="Internal Server Error")

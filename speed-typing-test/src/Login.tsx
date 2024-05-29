@@ -12,15 +12,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault();
-		try {
-			const response = await axios.post('http://localhost:8000/auth/login', { username, password });
-			const { token } = response.data;
-			onLogin(token, username);
-		} catch (err) {
-			setError('Invalid username or password');
-		}
-	};
+        event.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:8000/auth/login', { username, password });
+            const { token } = response.data;
+            if (token) {
+                localStorage.setItem('token', token);  // Сохранение токена в localStorage
+                onLogin(token, username);
+            } else {
+                setError('Login failed: No token received');
+            }
+        } catch (err) {
+            setError('Invalid username or password');
+        }
+    };
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>

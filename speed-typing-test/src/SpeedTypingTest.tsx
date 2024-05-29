@@ -1,6 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Container, Typography, Button, Select, MenuItem, TextField, Box, Paper, Grid } from '@mui/material';
-import axios from 'axios';
 
 const SpeedTypingTest: React.FC = () => {
     const [language, setLanguage] = useState<string>('ru');
@@ -10,16 +9,6 @@ const SpeedTypingTest: React.FC = () => {
     const [timer, setTimer] = useState<boolean | null>(null);
     const [timeLeft, setTimeLeft] = useState<number>(0);
     const [result, setResult] = useState<string>('');
-
-    const downloadResults = async () => {
-        const response = await axios.get('http://localhost:8000/test/results', { responseType: 'blob' });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'results.txt');
-        document.body.appendChild(link);
-        link.click();
-    };
 
     useEffect(() => {
         if (timeLeft > 0) {
@@ -48,14 +37,14 @@ const SpeedTypingTest: React.FC = () => {
             endTest();
         }
     };
-
-    const endTest = () => {
+    
+    const endTest = async () => {
         setTimer(false);
         const inputWords = userInput.trim().split(' ');
         let correctChars = 0;
         let totalChars = 0;
         let correctWords = 0;
-
+    
         for (let i = 0; i < inputWords.length; i++) {
             const word = inputWords[i];
             const testWord = testWords[i] || '';
@@ -72,7 +61,7 @@ const SpeedTypingTest: React.FC = () => {
             }
             totalChars += testWord.length;
         }
-
+    
         const accuracy = (correctChars / totalChars) * 100;
         const timeTaken = timeLimit - timeLeft;
         const wpm = (correctWords / timeTaken) * 60;
@@ -150,11 +139,6 @@ const SpeedTypingTest: React.FC = () => {
                         <Typography variant="body1">{result}</Typography>
                     </Box>
                 )}
-            </Box>
-            <Box display="flex" justifyContent="center" mt={2}>
-                <Button onClick={downloadResults} variant="contained" color="primary">
-                    Скачать результаты
-                </Button>
             </Box>
         </Container>
     );
