@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginProps {
     onLogin: (token: string, username: string) => void;
@@ -10,6 +11,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -19,18 +21,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             if (token) {
                 localStorage.setItem('token', token);  // Сохранение токена в localStorage
                 onLogin(token, username);
+                alert('Авторизация успешна!');
+                navigate('/'); // Redirect to the main page
             } else {
-                setError('Login failed: No token received');
+                setError('Авторизация не удалась: токен не получен');
             }
         } catch (err) {
-            setError('Invalid username or password');
+            setError('Неверное имя пользователя или пароль');
         }
     };
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <Typography component="h1" variant="h5">
-                Login
+                Вход
             </Typography>
             <TextField
                 margin="normal"
@@ -68,7 +72,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 				color="secondary"
                 sx={{ mt: 3, mb: 2 }}
             >
-                Login
+                Вход
             </Button>
         </Box>
     );

@@ -65,7 +65,7 @@ const SpeedTypingTest: React.FC = () => {
         const accuracy = (correctChars / totalChars) * 100;
         const timeTaken = timeLimit - timeLeft;
         const wpm = (correctWords / timeTaken) * 60;
-        setResult(`Времени прошло: ${timeTaken.toFixed(2)} seconds\nAccuracy: ${accuracy.toFixed(2)}%\nWords per minute: ${wpm.toFixed(2)}`);
+        setResult(`Времени прошло: ${timeTaken.toFixed(2)} секунд\nТочность: ${accuracy.toFixed(2)}%\nСлов в минуту: ${wpm.toFixed(2)}`);
     };
 
     return (

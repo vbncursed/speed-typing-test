@@ -151,12 +151,12 @@ const MainMenu: React.FC<{ handleLogout: () => void, isAuthenticated: boolean, u
         <Box>
             {location.pathname !== '/register' && !isAuthenticated && (
                 <Button variant="contained" color="primary" component={Link} to="/register" style={{ marginRight: '10px' }}>
-                    Register
+                    Регистрация
                 </Button>
             )}
             {location.pathname !== '/login' && !isAuthenticated && (
                 <Button variant="contained" color="secondary" component={Link} to="/login" style={{ marginRight: '10px' }}>
-                    Login
+                    Вход
                 </Button>
             )}
             {isAuthenticated && username && (
@@ -179,7 +179,7 @@ const MainMenu: React.FC<{ handleLogout: () => void, isAuthenticated: boolean, u
                         }}
                     >
                         <Button variant="contained" color="inherit" onClick={handleLogout} style={{ marginTop: '10px' }}>
-                            Logout
+                            Выход
                         </Button>
                     </Popover>
                 </Box>
