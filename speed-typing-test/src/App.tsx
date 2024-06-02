@@ -5,6 +5,7 @@ import { createTheme } from "@mui/material/styles";
 import HomeIcon from "@mui/icons-material/Home";
 import SpeedTypingTest from "./SpeedTypingTest";
 import Register from "./Register";
+import Profile from "./Profile";
 import Login from "./Login";
 import axios from "axios";
 import {
@@ -22,7 +23,8 @@ import {
   Tooltip,
   ThemeProvider,
   Button,
-  Popover,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 
 const lightTheme = createTheme({
@@ -175,6 +177,7 @@ const App: React.FC = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/" element={<SpeedTypingTest />} />
+            <Route path="/profile" element={<Profile username={username} />} />
           </Routes>
         </Container>
       </Router>
@@ -199,7 +202,6 @@ const MainMenu: React.FC<{
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
 
   return (
     <Box>
@@ -230,10 +232,9 @@ const MainMenu: React.FC<{
           <Button variant="contained" color="inherit" onClick={handleClick}>
             {username}
           </Button>
-          <Popover
-            id={id}
-            open={open}
+          <Menu
             anchorEl={anchorEl}
+            open={open}
             onClose={handleClose}
             anchorOrigin={{
               vertical: "bottom",
@@ -243,16 +244,24 @@ const MainMenu: React.FC<{
               vertical: "top",
               horizontal: "center",
             }}
+            MenuListProps={{
+              sx: {
+                minWidth: anchorEl ? anchorEl.clientWidth : undefined,
+              },
+            }}
           >
-            <Button
-              variant="contained"
-              color="inherit"
-              onClick={handleLogout}
-              style={{ marginTop: "10px" }}
+            <MenuItem component={Link} to="/profile" onClick={handleClose}>
+              Профиль
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleLogout();
+                handleClose();
+              }}
             >
               Выход
-            </Button>
-          </Popover>
+            </MenuItem>
+          </Menu>
         </Box>
       )}
     </Box>
