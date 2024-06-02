@@ -1,7 +1,9 @@
 body {
   font-family: Calibri, Arial, sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
+  background-color: var(
+    --background-color
+  ); /* Используем переменные для фона */
+  color: var(--text-color); /* Используем переменные для текста */
   margin: 0;
   padding: 20px;
   display: flex;

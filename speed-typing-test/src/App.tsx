@@ -28,11 +28,19 @@ import {
 const lightTheme = createTheme({
   palette: {
     mode: "light",
+    background: {
+      default: "#F6F6F6", // Новый цвет фона для светлой темы
+      paper: "#FFFFFF", // Цвет для элементов
+    },
     primary: {
-      main: "#4CAF50",
+      main: "#FFCB74", // Новый основной цвет
     },
     secondary: {
-      main: "#FF5722",
+      main: "#2F2F2F", // Новый вторичный цвет
+    },
+    text: {
+      primary: "#111111", // Цвет текста
+      secondary: "#2F2F2F", // Вторичный цвет текста
     },
   },
   shape: {
@@ -55,11 +63,19 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
+    background: {
+      default: "#111111", // Новый цвет фона для темной темы
+      paper: "#2F2F2F", // Цвет для элементов
+    },
     primary: {
-      main: "#4CAF50",
+      main: "#FFCB74", // Новый основной цвет
     },
     secondary: {
-      main: "#FF5722",
+      main: "#F6F6F6", // Новый вторичный цвет
+    },
+    text: {
+      primary: "#F6F6F6", // Цвет текста
+      secondary: "#FFCB74", // Вторичный цвет текста
     },
   },
   shape: {
@@ -83,6 +99,17 @@ const App: React.FC = () => {
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkTheme) {
+      root.style.setProperty("--background-color", "#111111");
+      root.style.setProperty("--text-color", "#F6F6F6");
+    } else {
+      root.style.setProperty("--background-color", "#F6F6F6");
+      root.style.setProperty("--text-color", "#111111");
+    }
+  }, [isDarkTheme]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
