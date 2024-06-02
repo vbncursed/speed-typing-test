@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db import database
-from routes import auth, test
+from routes import auth, test, results
 
 app = FastAPI()
 
@@ -32,5 +32,6 @@ async def test_db():
     return {"result": result}
 
 
+app.include_router(results.router, prefix="/results")
 app.include_router(auth.router, prefix="/auth")
 app.include_router(test.router, prefix="/test")
