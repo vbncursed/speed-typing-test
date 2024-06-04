@@ -21,7 +21,7 @@ class Result(BaseModel):
     accuracy: float
     test_date: datetime
     language: str
-    username: str  # Добавьте это поле
+    username: str
 
     class Config:
         orm_mode: True
