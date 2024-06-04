@@ -172,7 +172,7 @@ const App: React.FC = () => {
             username={username}
           />
         </Box>
-        <Container maxWidth="sm">
+        <Container maxWidth={false} sx={{ width: "100%", padding: 0 }}>
           <Routes>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />

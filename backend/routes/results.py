@@ -22,6 +22,12 @@ async def save_result(result: ResultCreate):
 
 @router.get("/top-results", response_model=List[Result])
 async def top_results(limit: int = 10):
-    query = results.select().order_by(results.c.wpm.desc()).limit(limit)
-    top_results = await database.fetch_all(query)
+    query = """
+    SELECT results.id, results.user_id, results.wpm, results.accuracy, results.test_date, results.language, users.username
+    FROM results
+    JOIN users ON results.user_id = users.id
+    ORDER BY results.wpm DESC
+    LIMIT :limit
+    """
+    top_results = await database.fetch_all(query, values={"limit": limit})
     return top_results
