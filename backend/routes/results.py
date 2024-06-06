@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from db import database
 from models import results, users
 from schemas import ResultCreate, Result
@@ -44,3 +44,22 @@ async def top_results(limit: int = 10):
     """
     top_results = await database.fetch_all(query, values={"limit": limit})
     return top_results
+
+
+@router.get("/user-results", response_model=List[Result])
+async def user_results(username: str):
+    user_query = users.select().where(users.c.username == username)
+    user = await database.fetch_one(user_query)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    query = """
+    SELECT results.id, results.user_id, results.wpm, results.accuracy, results.test_date, results.language, users.username
+    FROM results
+    JOIN users ON results.user_id = users.id
+    WHERE users.username = :username
+    ORDER BY results.test_date DESC
+    """
+    user_results = await database.fetch_all(query, values={"username": username})
+    return user_results

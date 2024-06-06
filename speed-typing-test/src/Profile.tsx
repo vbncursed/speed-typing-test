@@ -3,6 +3,16 @@ import { Box, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import axios from "axios";
 import { format } from "date-fns";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const languageMap: { [key: string]: string } = {
   ru: "Русский",
@@ -21,6 +31,7 @@ interface Result {
 
 const Profile: React.FC<{ username: string | null }> = ({ username }) => {
   const [topResults, setTopResults] = useState<Result[]>([]);
+  const [userResults, setUserResults] = useState<Result[]>([]);
 
   useEffect(() => {
     const fetchTopResults = async () => {
@@ -34,12 +45,28 @@ const Profile: React.FC<{ username: string | null }> = ({ username }) => {
       }
     };
 
+    const fetchUserResults = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/results/user-results?username=${username}`
+        );
+        const sortedResults = response.data.sort(
+          (a: Result, b: Result) =>
+            new Date(a.test_date).getTime() - new Date(b.test_date).getTime()
+        );
+        setUserResults(sortedResults);
+      } catch (error) {
+        console.error("Ошибка при получении результатов пользователя:", error);
+      }
+    };
+
     fetchTopResults();
-  }, []);
+    fetchUserResults();
+  }, [username]);
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 90 },
-    { field: "username", headerName: "Пользователь", width: 150 },
+    { field: "id", headerName: "ID результата", width: 120 },
+    { field: "username", headerName: "Пользователь", width: 120 },
     { field: "wpm", headerName: "WPM", width: 100 },
     { field: "accuracy", headerName: "Точность", width: 100 },
     {
@@ -50,7 +77,7 @@ const Profile: React.FC<{ username: string | null }> = ({ username }) => {
         const date = new Date(params.value as string);
         return isNaN(date.getTime())
           ? "Invalid Date"
-          : format(date, "dd.MM.yyyy HH:mm:ss");
+          : format(date, "dd.MM.yy HH:mm");
       },
     },
     {
@@ -79,6 +106,30 @@ const Profile: React.FC<{ username: string | null }> = ({ username }) => {
       <Typography variant="h4" sx={{ display: "inline-block" }}>
         Профиль пользователя {username}
       </Typography>
+      <Box sx={{ width: "100%", height: 400, mt: 3 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={userResults}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="test_date"
+              tickFormatter={(tick) => format(new Date(tick), "dd.MM.yy HH:mm")}
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="wpm"
+              stroke="#8884d8"
+              activeDot={{ r: 8 }}
+            />
+            <Line type="monotone" dataKey="accuracy" stroke="#82ca9d" />
+          </LineChart>
+        </ResponsiveContainer>
+      </Box>
       <Typography variant="h5" sx={{ mt: 3 }}>
         Топ пользователей
       </Typography>
