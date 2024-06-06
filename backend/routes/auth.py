@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+from databases import bindparam
 from schemas import UserCreate
 from jose import JWTError, jwt
 from models import users
@@ -25,8 +26,8 @@ async def register(user: UserCreate):
 
 @router.post("/login")
 async def login(user: UserCreate):
-    query = users.select().where(users.c.username == user.username)
-    db_user = await database.fetch_one(query)
+    query = users.select().where(users.c.username == bindparam("username"))
+    db_user = await database.fetch_one(query, values={"username": user.username})
     if db_user and pwd_context.verify(user.password, db_user["hashed_password"]):
         # Генерация JWT токена
         token = jwt.encode({"sub": str(db_user["id"])}, "SECRET_KEY", algorithm="HS256")
@@ -51,8 +52,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 @router.get("/me")
 async def get_me(current_user: dict = Depends(get_current_user)):
     try:
-        query = users.select().where(users.c.id == int(current_user["id"]))
-        db_user = await database.fetch_one(query)
+        query = users.select().where(users.c.id == bindparam("user_id"))
+        db_user = await database.fetch_one(
+            query, values={"user_id": int(current_user["id"])}
+        )
         if db_user:
             return {"id": db_user["id"], "username": db_user["username"]}
         raise HTTPException(status_code=404, detail="User not found")
