@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from schemas import ResultCreate, Result
 from .auth import get_current_user
 from models import results, users
-from databases import bindparam
 from datetime import datetime
 from db import database
 from typing import List
@@ -23,8 +22,8 @@ async def save_result(
     result_id = await database.execute(query)
 
     # Получение username
-    user_query = users.select().where(users.c.id == bindparam("user_id"))
-    user = await database.fetch_one(user_query, values={"user_id": result.user_id})
+    user_query = users.select().where(users.c.id == result.user_id)
+    user = await database.fetch_one(user_query)
 
     return {
         **result.dict(),
@@ -49,8 +48,8 @@ async def top_results(limit: int = 10):
 
 @router.get("/user-results", response_model=List[Result])
 async def user_results(username: str):
-    user_query = users.select().where(users.c.username == bindparam("username"))
-    user = await database.fetch_one(user_query, values={"username": username})
+    user_query = users.select().where(users.c.username == username)
+    user = await database.fetch_one(user_query)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
