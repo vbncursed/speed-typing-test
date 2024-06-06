@@ -12,6 +12,11 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
+const languageMap: { [key: string]: string } = {
+  ru: "Русский",
+  en: "Английский",
+};
+
 const SpeedTypingTest: React.FC = () => {
   const [language, setLanguage] = useState<string>("ru");
   const [timeLimit, setTimeLimit] = useState<number>(10);
@@ -53,7 +58,7 @@ const SpeedTypingTest: React.FC = () => {
         2
       )} секунд\nТочность: ${accuracy.toFixed(
         2
-      )}%\nСлов в минуту: ${wpm.toFixed(2)}`
+      )}%\nСлов в минуту: ${wpm.toFixed(2)}\nЯзык: ${languageMap[language]}`
     );
 
     // Сохранение результата

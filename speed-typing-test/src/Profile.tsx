@@ -4,6 +4,11 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import axios from "axios";
 import { format } from "date-fns";
 
+const languageMap: { [key: string]: string } = {
+  ru: "Русский",
+  en: "Английский",
+};
+
 interface Result {
   id: number;
   user_id: number;
@@ -48,7 +53,14 @@ const Profile: React.FC<{ username: string | null }> = ({ username }) => {
           : format(date, "dd.MM.yyyy HH:mm:ss");
       },
     },
-    { field: "language", headerName: "Язык", width: 100 },
+    {
+      field: "language",
+      headerName: "Язык",
+      width: 100,
+      renderCell: (params: GridRenderCellParams) => {
+        return languageMap[params.value as string] || params.value;
+      },
+    },
   ];
 
   return (
