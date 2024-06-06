@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import axios from "axios";
+import { format } from "date-fns";
 
 interface Result {
   id: number;
@@ -24,7 +25,7 @@ const Profile: React.FC<{ username: string | null }> = ({ username }) => {
         );
         setTopResults(response.data);
       } catch (error) {
-        console.error("Ошибка при получении топ результатов:", error);
+        console.error("Ошибка при получении топа результатов:", error);
       }
     };
 
@@ -36,7 +37,17 @@ const Profile: React.FC<{ username: string | null }> = ({ username }) => {
     { field: "username", headerName: "Пользователь", width: 150 },
     { field: "wpm", headerName: "WPM", width: 100 },
     { field: "accuracy", headerName: "Точность", width: 100 },
-    { field: "test_date", headerName: "Дата теста", width: 210 },
+    {
+      field: "test_date",
+      headerName: "Дата теста",
+      width: 210,
+      renderCell: (params: GridRenderCellParams) => {
+        const date = new Date(params.value as string);
+        return isNaN(date.getTime())
+          ? "Invalid Date"
+          : format(date, "dd.MM.yyyy HH:mm:ss");
+      },
+    },
     { field: "language", headerName: "Язык", width: 100 },
   ];
 

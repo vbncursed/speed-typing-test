@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
 import {
   Container,
   Typography,
@@ -10,6 +10,7 @@ import {
   Paper,
   Grid,
 } from "@mui/material";
+import axios from "axios";
 
 const SpeedTypingTest: React.FC = () => {
   const [language, setLanguage] = useState<string>("ru");
@@ -20,37 +21,7 @@ const SpeedTypingTest: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [result, setResult] = useState<string>("");
 
-  useEffect(() => {
-    if (timeLeft > 0) {
-      const countdown = setInterval(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-      return () => clearInterval(countdown);
-    } else if (timeLeft === 0 && timer) {
-      endTest();
-    }
-  }, [timeLeft, timer]);
-
-  const startTest = async () => {
-    const response = await fetch(
-      `http://localhost:8000/test/start-test?language=${language}`
-    );
-    const data = await response.json();
-    setTestWords(data.words);
-    setUserInput("");
-    setResult("");
-    setTimeLeft(timeLimit);
-    setTimer(true);
-  };
-
-  const checkInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setUserInput(e.target.value);
-    if (e.target.value.split(" ").length === testWords.length) {
-      endTest();
-    }
-  };
-
-  const endTest = async () => {
+  const endTest = useCallback(async () => {
     setTimer(false);
     const inputWords = userInput.trim().split(" ");
     let correctChars = 0;
@@ -84,6 +55,72 @@ const SpeedTypingTest: React.FC = () => {
         2
       )}%\nСлов в минуту: ${wpm.toFixed(2)}`
     );
+
+    // Сохранение результата
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const userResponse = await axios.get("http://localhost:8000/auth/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const userId = parseInt(userResponse.data.id, 10);
+        console.log(userId);
+
+        await axios.post(
+          "http://localhost:8000/results/save-result",
+          {
+            user_id: userId,
+            wpm: wpm,
+            accuracy: accuracy,
+            language: language,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        alert("Результат сохранен успешно!");
+      } else {
+        alert("Не удалось сохранить результат: токен не найден");
+      }
+    } catch (error) {
+      console.error("Ошибка при сохранении результата:", error);
+      alert("Ошибка при сохранении результата");
+    }
+  }, [userInput, testWords, timeLimit, timeLeft, language]);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const countdown = setInterval(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+      return () => clearInterval(countdown);
+    } else if (timeLeft === 0 && timer) {
+      endTest();
+    }
+  }, [timeLeft, timer, endTest]);
+
+  const startTest = async () => {
+    const response = await fetch(
+      `http://localhost:8000/test/start-test?language=${language}`
+    );
+    const data = await response.json();
+    setTestWords(data.words);
+    setUserInput("");
+    setResult("");
+    setTimeLeft(timeLimit);
+    setTimer(true);
+  };
+
+  const checkInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserInput(e.target.value);
+    if (e.target.value.split(" ").length === testWords.length) {
+      endTest();
+    }
   };
 
   return (

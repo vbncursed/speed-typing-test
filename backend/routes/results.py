@@ -1,15 +1,18 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from db import database
-from models import results
+from models import results, users
 from schemas import ResultCreate, Result
 from datetime import datetime
 from typing import List
+from .auth import get_current_user
 
 router = APIRouter()
 
 
 @router.post("/save-result", response_model=Result)
-async def save_result(result: ResultCreate):
+async def save_result(
+    result: ResultCreate, current_user: dict = Depends(get_current_user)
+):
     query = results.insert().values(
         user_id=result.user_id,
         wpm=result.wpm,
@@ -17,7 +20,17 @@ async def save_result(result: ResultCreate):
         language=result.language,
     )
     result_id = await database.execute(query)
-    return {**result.dict(), "id": result_id, "test_date": datetime.now()}
+
+    # Получение username
+    user_query = users.select().where(users.c.id == result.user_id)
+    user = await database.fetch_one(user_query)
+
+    return {
+        **result.dict(),
+        "id": result_id,
+        "test_date": datetime.now(),
+        "username": user["username"] if user else "Unknown",
+    }
 
 
 @router.get("/top-results", response_model=List[Result])

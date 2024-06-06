@@ -46,3 +46,16 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError as e:
         print(f"Ошибка декодирования токена: {e}")  # Отладочное сообщение
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+@router.get("/me")
+async def get_me(current_user: dict = Depends(get_current_user)):
+    try:
+        query = users.select().where(users.c.id == int(current_user["id"]))
+        db_user = await database.fetch_one(query)
+        if db_user:
+            return {"id": db_user["id"], "username": db_user["username"]}
+        raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        print(f"Ошибка при получении информации о пользователе: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
