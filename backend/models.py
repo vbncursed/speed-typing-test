@@ -1,5 +1,5 @@
-import sqlalchemy
 from db import metadata
+import sqlalchemy
 
 users = sqlalchemy.Table(
     "users",

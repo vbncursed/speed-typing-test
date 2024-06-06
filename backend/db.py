@@ -1,5 +1,5 @@
-import databases
 import sqlalchemy
+import databases
 
 DATABASE_URL = "postgresql://postgres:password123@db/speed_typing_test"
 database = databases.Database(DATABASE_URL)

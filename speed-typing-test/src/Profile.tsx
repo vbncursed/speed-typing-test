@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { format } from "date-fns";
 import {
@@ -29,7 +30,8 @@ interface Result {
   username: string;
 }
 
-const Profile: React.FC<{ username: string | null }> = ({ username }) => {
+const Profile: React.FC = () => {
+  const { username } = useParams<{ username: string }>();
   const [topResults, setTopResults] = useState<Result[]>([]);
   const [userResults, setUserResults] = useState<Result[]>([]);
 

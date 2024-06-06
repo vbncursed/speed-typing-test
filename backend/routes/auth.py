@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from db import database
-from models import users
 from schemas import UserCreate
 from jose import JWTError, jwt
+from models import users
+from db import database
 
 
 router = APIRouter()

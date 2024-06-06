@@ -177,7 +177,7 @@ const App: React.FC = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/" element={<SpeedTypingTest />} />
-            <Route path="/profile" element={<Profile username={username} />} />
+            <Route path="/profile/:username" element={<Profile />} />
           </Routes>
         </Container>
       </Router>
@@ -250,7 +250,11 @@ const MainMenu: React.FC<{
               },
             }}
           >
-            <MenuItem component={Link} to="/profile" onClick={handleClose}>
+            <MenuItem
+              component={Link}
+              to={`/profile/${username}`}
+              onClick={handleClose}
+            >
               Профиль
             </MenuItem>
             <MenuItem

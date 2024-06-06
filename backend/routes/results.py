@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from db import database
-from models import results, users
 from schemas import ResultCreate, Result
-from datetime import datetime
-from typing import List
 from .auth import get_current_user
+from models import results, users
+from datetime import datetime
+from db import database
+from typing import List
 
 router = APIRouter()
 
