@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  ChangeEvent,
+} from "react";
 import {
   Container,
   Typography,
@@ -25,9 +31,15 @@ const SpeedTypingTest: React.FC = () => {
   const [timer, setTimer] = useState<boolean | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [result, setResult] = useState<string>("");
+  const intervalRef = useRef<number | null>(null);
+  const timeLeftRef = useRef<number>(timeLimit);
+  const startTimeRef = useRef<number | null>(null);
 
   const endTest = useCallback(async () => {
     setTimer(false);
+    if (intervalRef.current) {
+      cancelAnimationFrame(intervalRef.current);
+    }
     const inputWords = userInput.trim().split(" ");
     let correctChars = 0;
     let totalChars = 0;
@@ -51,7 +63,7 @@ const SpeedTypingTest: React.FC = () => {
     }
 
     const accuracy = (correctChars / totalChars) * 100;
-    const timeTaken = timeLimit - timeLeft;
+    const timeTaken = timeLimit - timeLeftRef.current;
     const wpm = (correctWords / timeTaken) * 60;
     setResult(
       `Времени прошло: ${timeTaken.toFixed(
@@ -96,18 +108,37 @@ const SpeedTypingTest: React.FC = () => {
       console.error("Ошибка при сохранении результата:", error);
       alert("Ошибка при сохранении результата");
     }
-  }, [userInput, testWords, timeLimit, timeLeft, language]);
+  }, [userInput, testWords, timeLimit, language]);
+
+  const updateTimer = useCallback(
+    (timestamp: number) => {
+      if (!startTimeRef.current) {
+        startTimeRef.current = timestamp;
+      }
+      const elapsed = timestamp - startTimeRef.current;
+      const timeLeft = timeLimit - Math.floor(elapsed / 1000);
+      setTimeLeft(timeLeft);
+      timeLeftRef.current = timeLeft;
+
+      if (timeLeft > 0) {
+        intervalRef.current = requestAnimationFrame(updateTimer);
+      } else {
+        endTest();
+      }
+    },
+    [timeLimit, endTest]
+  );
 
   useEffect(() => {
-    if (timeLeft > 0) {
-      const countdown = setInterval(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-      return () => clearInterval(countdown);
-    } else if (timeLeft === 0 && timer) {
-      endTest();
+    if (timer) {
+      intervalRef.current = requestAnimationFrame(updateTimer);
     }
-  }, [timeLeft, timer, endTest]);
+    return () => {
+      if (intervalRef.current) {
+        cancelAnimationFrame(intervalRef.current);
+      }
+    };
+  }, [timer, updateTimer]);
 
   const startTest = async () => {
     const response = await fetch(
@@ -117,6 +148,7 @@ const SpeedTypingTest: React.FC = () => {
     setTestWords(data.words);
     setUserInput("");
     setResult("");
+    timeLeftRef.current = timeLimit;
     setTimeLeft(timeLimit);
     setTimer(true);
   };
