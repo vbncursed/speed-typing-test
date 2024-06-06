@@ -14,7 +14,6 @@
 1. Клонируйте репозиторий:
 ```bash
 git clone https://github.com/vbncursed/speed-typing-test.git
-
 cd speed-typing-test
 ```
 
@@ -30,7 +29,7 @@ docker-compose up --build
    	- Фронтенд: [http://localhost:3000](http://localhost:3000)
    	- Бэкенд: [http://localhost:8000](http://localhost:8000)
 
-### Структура проекта
+## Структура проекта
 
 - `backend/` - директория с кодом бэкенда на FastAPI
 - `speed-typing-test/` - директория с кодом фронтенда на React и TypeScript
@@ -38,9 +37,9 @@ docker-compose up --build
 - `backend/Dockerfile` - Dockerfile для бэкенда
 - `speed-typing-test/Dockerfile` - Dockerfile для фронтенда
 
-### Примеры API
+## Примеры API
 
-- Тестовый эндпоинт для проверки базы данных:
+### Тестовый эндпоинт для проверки базы данных:
 ```bash
 GET /test-db
 ```
@@ -55,7 +54,50 @@ GET /test-db
 }
 ```
 
+### Эндпоинт для начала теста:
+```bash
+GET /test/start-test?language=ru
+```
 
-### Лицензия
+
+Ответ:
+```json
+{
+  "words": ["слово1", "слово2", "слово3", ...]
+}
+```
+
+
+### Эндпоинт для сохранения результата:
+```bash
+POST /results/save-result
+```
+
+
+Тело запроса:
+```json
+{
+  "user_id": 1,
+  "wpm": 50,
+  "accuracy": 95.50,
+  "language": "ru"
+}
+```
+
+Ответ:
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "wpm": 50,
+  "accuracy": 95.55,
+  "test_date": "2024-02-01T12:00:00",
+  "language": "ru",
+  "username": "user1"
+}
+```
+
+
+## Лицензия
 
 Этот проект лицензирован под лицензией MIT. Подробности см. в файле [LICENSE](LICENSE).
