@@ -67,7 +67,7 @@ const darkTheme = createTheme({
     mode: "dark",
     background: {
       default: "#222831", // Новый цвет фона для темной темы
-      paper: "#393E46", // Цвет для элементов
+      paper: "#24272c", // Цвет для элементов
     },
     primary: {
       main: "#FD7014", // Новый основной цвет
