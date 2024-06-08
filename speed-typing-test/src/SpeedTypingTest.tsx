@@ -64,7 +64,7 @@ const SpeedTypingTest: React.FC = () => {
 
     const accuracy = (correctChars / totalChars) * 100;
     const timeTaken = timeLimit - timeLeftRef.current;
-    const wpm = (correctWords / timeTaken) * 60;
+    const wpm = timeTaken > 0 ? (correctWords / timeTaken) * 60 : 0;
     setResult(
       `Времени прошло: ${timeTaken.toFixed(
         2
@@ -76,34 +76,35 @@ const SpeedTypingTest: React.FC = () => {
     // Сохранение результата
     try {
       const token = localStorage.getItem("token");
-      if (token) {
-        const userResponse = await axios.get("http://localhost:8000/auth/me", {
+      if (!token) {
+        alert("Не удалось сохранить результат: токен не найден");
+        return;
+      }
+
+      const userResponse = await axios.get("http://localhost:8000/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userId = parseInt(userResponse.data.id, 10);
+      console.log(userId);
+
+      await axios.post(
+        "http://localhost:8000/results/save-result",
+        {
+          user_id: userId,
+          wpm: wpm,
+          accuracy: accuracy,
+          language: language,
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-        });
-        const userId = parseInt(userResponse.data.id, 10);
-        console.log(userId);
-
-        await axios.post(
-          "http://localhost:8000/results/save-result",
-          {
-            user_id: userId,
-            wpm: wpm,
-            accuracy: accuracy,
-            language: language,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        alert("Результат сохранен успешно!");
-      } else {
-        alert("Не удалось сохранить результат: токен не найден");
-      }
+        }
+      );
+      alert("Результат сохранен успешно!");
     } catch (error) {
       console.error("Ошибка при сохранении результата:", error);
       alert("Ошибка при сохранении результата");
@@ -117,12 +118,12 @@ const SpeedTypingTest: React.FC = () => {
       }
       const elapsed = timestamp - startTimeRef.current;
       const timeLeft = timeLimit - Math.floor(elapsed / 1000);
-      setTimeLeft(timeLeft);
-      timeLeftRef.current = timeLeft;
-
-      if (timeLeft > 0) {
+      if (timeLeft >= 0) {
+        setTimeLeft(timeLeft);
+        timeLeftRef.current = timeLeft;
         intervalRef.current = requestAnimationFrame(updateTimer);
       } else {
+        setTimeLeft(0);
         endTest();
       }
     },
@@ -141,16 +142,27 @@ const SpeedTypingTest: React.FC = () => {
   }, [timer, updateTimer]);
 
   const startTest = async () => {
-    const response = await fetch(
-      `http://localhost:8000/test/start-test?language=${language}`
-    );
-    const data = await response.json();
-    setTestWords(data.words);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Не удалось начать тест: необходима регистрация");
+      return;
+    }
+
+    if (intervalRef.current) {
+      cancelAnimationFrame(intervalRef.current);
+    }
+    setTestWords([]);
     setUserInput("");
     setResult("");
     timeLeftRef.current = timeLimit;
     setTimeLeft(timeLimit);
     setTimer(true);
+
+    const response = await fetch(
+      `http://localhost:8000/test/start-test?language=${language}`
+    );
+    const data = await response.json();
+    setTestWords(data.words);
   };
 
   const checkInput = (e: ChangeEvent<HTMLInputElement>) => {
