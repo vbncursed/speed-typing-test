@@ -66,18 +66,18 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     background: {
-      default: "#111111", // Новый цвет фона для темной темы
-      paper: "#2F2F2F", // Цвет для элементов
+      default: "#222831", // Новый цвет фона для темной темы
+      paper: "#393E46", // Цвет для элементов
     },
     primary: {
-      main: "#FFCB74", // Новый основной цвет
+      main: "#FD7014", // Новый основной цвет
     },
     secondary: {
-      main: "#F6F6F6", // Новый вторичный цвет
+      main: "#EEEEEE", // Новый вторичный цвет
     },
     text: {
-      primary: "#F6F6F6", // Цвет текста
-      secondary: "#FFCB74", // Вторичный цвет текста
+      primary: "#EEEEEE", // Цвет текста
+      secondary: "#FD7014", // Вторичный цвет текста
     },
   },
   shape: {
