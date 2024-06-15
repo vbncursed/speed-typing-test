@@ -15,6 +15,7 @@ import {
   Box,
   Paper,
   Grid,
+  Checkbox,
 } from "@mui/material";
 import axios from "axios";
 
@@ -34,6 +35,7 @@ const SpeedTypingTest: React.FC = () => {
   const intervalRef = useRef<number | null>(null);
   const timeLeftRef = useRef<number>(timeLimit);
   const startTimeRef = useRef<number | null>(null);
+  const [includePunctuation, setIncludePunctuation] = useState<boolean>(false);
 
   const endTest = useCallback(async () => {
     setTimer(false);
@@ -159,7 +161,7 @@ const SpeedTypingTest: React.FC = () => {
     setTimer(true);
 
     const response = await fetch(
-      `http://localhost:8000/test/start-test?language=${language}`
+      `http://localhost:8000/test/start-test?language=${language}&includePunctuation=${includePunctuation}`
     );
     const data = await response.json();
     setTestWords(data.words);
@@ -210,6 +212,15 @@ const SpeedTypingTest: React.FC = () => {
                 <MenuItem value={30}>30 секунд</MenuItem>
                 <MenuItem value={60}>60 секунд</MenuItem>
               </Select>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">
+                Включить знаки пунктуации и заглавные буквы:
+                <Checkbox
+                  checked={includePunctuation}
+                  onChange={(e) => setIncludePunctuation(e.target.checked)}
+                />
+              </Typography>
             </Grid>
             <Grid item xs={12}>
               <Button

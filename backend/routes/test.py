@@ -15,7 +15,7 @@ def get_random_words(words, count):
 
 
 @router.get("/start-test")
-async def start_test(language: str):
+async def start_test(language: str, includePunctuation: bool = False):
     if language == "ru":
         file_path = "words_ru.txt"
     elif language == "en":
@@ -25,6 +25,12 @@ async def start_test(language: str):
 
     try:
         words = read_words_from_file(file_path)
+        if includePunctuation:
+            words = [
+                (word.capitalize() if random.random() > 0.8 else word)
+                + (random.choice([".", ",", "!", "?"]) if random.random() > 0.8 else "")
+                for word in words
+            ]
         test_words = get_random_words(words, 60)
         return {"words": test_words}
     except Exception as e:
