@@ -49,7 +49,7 @@ const lightTheme = createTheme({
     borderRadius: 16,
   },
   typography: {
-    fontFamily: "Calibri, Arial, sans-serif",
+    fontFamily: "Arial, sans-serif",
     h4: {
       fontWeight: 700,
     },

@@ -3,6 +3,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import InputAdornment from "@mui/material/InputAdornment";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -11,6 +12,7 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -48,6 +50,12 @@ const Register: React.FC = () => {
             </InputAdornment>
           ),
         }}
+        sx={{
+          "& input:-webkit-autofill": {
+            WebkitBoxShadow: `0 0 0 1000px ${theme.palette.background.default} inset`,
+            WebkitTextFillColor: theme.palette.text.primary,
+          },
+        }}
       />
       <TextField
         margin="normal"
@@ -66,6 +74,12 @@ const Register: React.FC = () => {
               <VpnKeyIcon />
             </InputAdornment>
           ),
+        }}
+        sx={{
+          "& input:-webkit-autofill": {
+            WebkitBoxShadow: `0 0 0 1000px ${theme.palette.background.default} inset`,
+            WebkitTextFillColor: theme.palette.text.primary,
+          },
         }}
       />
       {error && (
