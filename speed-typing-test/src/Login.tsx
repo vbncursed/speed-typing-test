@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import InputAdornment from "@mui/material/InputAdornment";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -47,9 +50,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         label="Username"
         name="username"
         autoComplete="username"
-        autoFocus
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <AccountCircle />
+            </InputAdornment>
+          ),
+        }}
       />
       <TextField
         margin="normal"
@@ -62,6 +71,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         autoComplete="current-password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <VpnKeyIcon />
+            </InputAdornment>
+          ),
+        }}
       />
       {error && (
         <Typography color="error" variant="body2">

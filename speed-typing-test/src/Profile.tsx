@@ -43,7 +43,7 @@ const Profile: React.FC = () => {
         );
         setTopResults(response.data);
       } catch (error) {
-        console.error("Ошибка при получении топа результатов:", error);
+        console.error(`Ошибка при получении топа результатов: ${error}`);
       }
     };
 
@@ -58,7 +58,10 @@ const Profile: React.FC = () => {
         );
         setUserResults(sortedResults);
       } catch (error) {
-        console.error("Ошибка при получении результатов пользователя:", error);
+        console.error(
+          `Ошибка при получении результатов пользователя: {}`,
+          error
+        );
       }
     };
 
