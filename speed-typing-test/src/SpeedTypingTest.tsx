@@ -16,6 +16,7 @@ import {
   Paper,
   Grid,
   Checkbox,
+  Modal,
 } from "@mui/material";
 import axios from "axios";
 
@@ -31,11 +32,14 @@ const SpeedTypingTest: React.FC = () => {
   const [userInput, setUserInput] = useState<string>("");
   const [timer, setTimer] = useState<boolean | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
-  const [result, setResult] = useState<string>("");
   const intervalRef = useRef<number | null>(null);
   const timeLeftRef = useRef<number>(timeLimit);
   const startTimeRef = useRef<number | null>(null);
   const [includePunctuation, setIncludePunctuation] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [resultMessage, setResultMessage] = useState<string>("");
+
+  const handleCloseModal = () => setOpenModal(false);
 
   const endTest = useCallback(async () => {
     setTimer(false);
@@ -67,13 +71,14 @@ const SpeedTypingTest: React.FC = () => {
     const accuracy = (correctChars / totalChars) * 100;
     const timeTaken = timeLimit - timeLeftRef.current;
     const wpm = timeTaken > 0 ? (correctWords / timeTaken) * 60 : 0;
-    setResult(
-      `Времени прошло: ${timeTaken.toFixed(
-        2
-      )} секунд\nТочность: ${accuracy.toFixed(
-        2
-      )}%\nСлов в минуту: ${wpm.toFixed(2)}\nЯзык: ${languageMap[language]}`
-    );
+    const resultMessage = `Времени прошло: ${timeTaken.toFixed(
+      2
+    )} секунд\nТочность: ${accuracy.toFixed(2)}%\nСлов в минуту: ${wpm.toFixed(
+      2
+    )}\nЯзык: ${languageMap[language]}`;
+
+    setResultMessage(resultMessage);
+    setOpenModal(true);
 
     // Сохранение результата
     try {
@@ -106,7 +111,6 @@ const SpeedTypingTest: React.FC = () => {
           },
         }
       );
-      alert("Результат сохранен успешно!");
     } catch (error) {
       console.error("Ошибка при сохранении результата:", error);
       alert("Ошибка при сохранении результата");
@@ -155,7 +159,6 @@ const SpeedTypingTest: React.FC = () => {
     }
     setTestWords([]);
     setUserInput("");
-    setResult("");
     timeLeftRef.current = timeLimit;
     setTimeLeft(timeLimit);
     setTimer(true);
@@ -258,12 +261,54 @@ const SpeedTypingTest: React.FC = () => {
           disabled={!timer}
           sx={{ borderRadius: "16px" }}
         />
-        {result && (
-          <Box mt={2}>
-            <Typography variant="body1">{result}</Typography>
-          </Box>
-        )}
       </Box>
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: "16px",
+          }}
+        >
+          <Typography
+            id="modal-title"
+            variant="h6"
+            component="h2"
+            sx={{ mb: 2 }}
+          >
+            Результат сохранен успешно!
+          </Typography>
+          <Typography id="modal-description" sx={{ mb: 2 }}>
+            {resultMessage}
+          </Typography>
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            color="primary"
+            sx={{
+              borderRadius: "16px",
+              boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.2)",
+              fontWeight: "bold",
+              fontSize: "16px",
+              padding: "10px 20px",
+            }}
+          >
+            Закрыть
+          </Button>
+        </Box>
+      </Modal>
     </Container>
   );
 };

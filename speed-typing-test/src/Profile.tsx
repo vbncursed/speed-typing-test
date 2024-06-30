@@ -82,7 +82,7 @@ const Profile: React.FC = () => {
         const date = new Date(params.value as string);
         return isNaN(date.getTime())
           ? "Invalid Date"
-          : format(date, "dd.MM.yy HH:mm");
+          : format(date, "dd.MM.yyyy HH:mm");
       },
     },
     {
