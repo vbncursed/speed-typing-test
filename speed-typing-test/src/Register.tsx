@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +12,7 @@ import axios from "axios";
 const Register: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false); // Added state for password visibility
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -26,6 +29,10 @@ const Register: React.FC = () => {
     } catch (err) {
       setError("Регистрация не удалась");
     }
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -63,7 +70,7 @@ const Register: React.FC = () => {
         fullWidth
         name="password"
         label="Password"
-        type="password"
+        type={showPassword ? "text" : "password"} // Changed to show password if showPassword is true
         id="password"
         autoComplete="current-password"
         value={password}
@@ -72,6 +79,17 @@ const Register: React.FC = () => {
           startAdornment: (
             <InputAdornment position="start">
               <VpnKeyIcon />
+            </InputAdornment>
+          ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle password visibility"
+                onClick={handleClickShowPassword}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
             </InputAdornment>
           ),
         }}
