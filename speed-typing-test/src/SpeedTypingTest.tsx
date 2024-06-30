@@ -115,7 +115,7 @@ const SpeedTypingTest: React.FC = () => {
         }
       );
     } catch (error) {
-      console.error("Ошибка при сохранении ��езультата:", error);
+      console.error("Ошибка при сохранении результата:", error);
       alert("Ошибка при сохранении результата");
     }
   }, [userInput, testWords, timeLimit, language]);
@@ -283,6 +283,7 @@ const SpeedTypingTest: React.FC = () => {
             boxShadow: 24,
             p: 4,
             borderRadius: "16px",
+            textAlign: "center", // Выровнять текст по центру
           }}
         >
           <Typography

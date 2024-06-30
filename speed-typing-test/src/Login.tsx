@@ -5,6 +5,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -18,6 +19,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false); // Added state for password visibility
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -66,6 +68,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </InputAdornment>
           ),
         }}
+        sx={{
+          "& input:-webkit-autofill": {
+            WebkitBoxShadow: `0 0 0 1000px ${theme.palette.background.default} inset`,
+            WebkitTextFillColor: theme.palette.text.primary,
+          },
+        }}
       />
       <TextField
         margin="normal"
@@ -73,7 +81,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         fullWidth
         name="password"
         label="Password"
-        type="password"
+        type={showPassword ? "text" : "password"} // Изменение типа поля
         id="password"
         autoComplete="current-password"
         value={password}
@@ -95,6 +103,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               </IconButton>
             </InputAdornment>
           ),
+        }}
+        sx={{
+          "& input:-webkit-autofill": {
+            WebkitBoxShadow: `0 0 0 1000px ${theme.palette.background.default} inset`,
+            WebkitTextFillColor: theme.palette.text.primary,
+          },
         }}
       />
       {error && (
