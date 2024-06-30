@@ -39,7 +39,10 @@ const SpeedTypingTest: React.FC = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [resultMessage, setResultMessage] = useState<string>("");
 
-  const handleCloseModal = () => setOpenModal(false);
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    window.location.reload(); // Обновление страницы после закрытия модального окна
+  };
 
   const endTest = useCallback(async () => {
     setTimer(false);
@@ -112,7 +115,7 @@ const SpeedTypingTest: React.FC = () => {
         }
       );
     } catch (error) {
-      console.error("Ошибка при сохранении результата:", error);
+      console.error("Ошибка при сохранении ��езультата:", error);
       alert("Ошибка при сохранении результата");
     }
   }, [userInput, testWords, timeLimit, language]);
