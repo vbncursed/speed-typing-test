@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  IconButton,
+  Snackbar,
+  Alert,
+  AlertTitle,
+} from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -12,8 +21,9 @@ import axios from "axios";
 const Register: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false); // Added state for password visibility
-  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState<boolean>(false);
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -24,15 +34,20 @@ const Register: React.FC = () => {
         username,
         password,
       });
-      alert("Регистрация прошла успешно");
-      navigate("/login"); // Redirect to the login page
+      setSuccess(true);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError("Регистрация не удалась");
+      setOpenErrorSnackbar(true);
     }
   };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSuccess(false);
+    setOpenErrorSnackbar(false);
   };
 
   return (
@@ -70,7 +85,7 @@ const Register: React.FC = () => {
         fullWidth
         name="password"
         label="Password"
-        type={showPassword ? "text" : "password"} // Changed to show password if showPassword is true
+        type={showPassword ? "text" : "password"}
         id="password"
         autoComplete="current-password"
         value={password}
@@ -100,14 +115,40 @@ const Register: React.FC = () => {
           },
         }}
       />
-      {error && (
-        <Typography color="error" variant="body2">
-          {error}
-        </Typography>
-      )}
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
         Регистрация
       </Button>
+      <Snackbar
+        open={success}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          <AlertTitle>Успех</AlertTitle>
+          Регистрация прошла успешно — <strong>перенаправление...</strong>
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={openErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          <AlertTitle>Ошибка</AlertTitle>
+          Регистрация не удалась, такое имя пользователя занято —{" "}
+          <strong>попробуйте снова.</strong>
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
